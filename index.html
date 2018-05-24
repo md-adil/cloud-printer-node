@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Print me</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
+</head>
+<body>
+	<div class="container">
+		<br />
+		<div class="row justify-content-center">
+			<div class="col-md-7">
+				<div class="card">
+					<div class="card-header">
+						Printer
+					</div>
+					<div class="card-body">
+						<form action="/print" id="print-form">
+							<div class="row">
+								<div class="col-md">
+									<input type="file" name="doc" />
+								</div>
+								<div class="col-md">
+									<button class="btn btn-primary" id="btn-submit">Print</button>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-5">
+				<div class="card">
+					<div class="card-header">
+						Connected Printers
+					</div>
+					<ul class="list-group" id="printers"></ul>
+				</div>
+
+			</div>
+		</div>
+	</div>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+	<script type="text/javascript" src="/client.js"></script>
+</body>
+</html>
