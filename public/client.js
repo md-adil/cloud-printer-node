@@ -1,5 +1,7 @@
 const socket = io('/clients');
 
+const printers = [];
+
 const $status = $('.status-log');
 
 const statusLog = (message, type = 'progress') => {
@@ -13,8 +15,8 @@ const statusLog = (message, type = 'progress') => {
 	$status.append(el);
 }
 
-$.get('/printers/active', printers => {
-	printers.forEach(addPrinter);
+$.get('/printers/active', _printers => {
+	_printers.forEach(addPrinter);
 });
 
 $('.btn-clear').click(function() {
@@ -24,9 +26,9 @@ $('.btn-clear').click(function() {
 const printerContainer = $('#printers');
 
 const addPrinter = printer => {
-	console.log(printer);
 	$('<li />', { 'data-id': printer.id, 'class': 'list-group-item', text: printer.name })
 	.appendTo(printerContainer);
+	printers.push(printer.id);
 };
 
 const removePrinter = id => {
@@ -43,13 +45,23 @@ $('#print-form').submit(e => {
 	sendFile(e.target);
 })
 
+const getActivePrinter = () => {
+	return printers[0];
+}
+
 const sendFile = form => {
+	const data = new FormData(form);
+	const id = getActivePrinter();
+	if(!id) {
+		return statusLog('We couldnt find any printer', 'fail');
+	}
 	const submitBtn = $('#btn-submit').prop('disabled', true);
+	data.append('id', id);
 	$.ajax({
 		type: "POST",
         enctype: 'multipart/form-data',
         url: "/print",
-        data: new FormData(form),
+        data,
         processData: false,
         contentType: false,
         cache: false,

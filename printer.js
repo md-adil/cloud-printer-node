@@ -6,12 +6,14 @@ const io = require('socket.io-client'),
 	exec = require('child_process').exec;
 
 const config = require('./config.js');
+let domain = 'http://print.piston.work/printers';
+domain = 'http://localhost:3001/printers';
 
 global.Promise = require('bluebird');
 
 const writeFileAsync = Promise.promisify(fs.writeFile);
 
-const socket = io(`${config.host}:${config.port}/printers`, {
+const socket = io(domain, {
 	query: { name: os.hostname() }
 });
 
@@ -20,11 +22,13 @@ socket.on('connect', () => {
 });
 
 socket.on('print', (data, obj) => {
-	putFile(data, obj.name);
+	console.log(obj);
+	putFile(data, obj);
 });
 
 const putFile = (data, obj) => {
 	const filename = __dirname + '/tmp/' + uuid() + '.' + path.extname(obj.name);
+	console.log('Saving file: ', filename);
 	writeFileAsync(filename, data)
 		.then(() => {
 			printTheFile(filename);
@@ -37,7 +41,9 @@ const putFile = (data, obj) => {
 const printTheFile = filename => {
 	console.log('printing');
 	exec(`print "${filename}"`, (err, data) => {
-		if(!err) {
+		if(err) {
+			console.log(err);
+		} else {
 			removeFile(filename);
 		}
 	});

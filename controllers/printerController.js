@@ -1,7 +1,4 @@
-const { io } = require('../server.js'),
-	fs = require('fs'),
-	ss = require('socket.io-stream'),
-	streamifier = require('streamifier');
+const { io } = require('../server.js');
 
 const printers = io.of('/printers'),
 	clients = io.of('/clients');
