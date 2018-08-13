@@ -1,7 +1,24 @@
 const socket = io('/clients');
 
+const $status = $('.status-log');
+
+const statusLog = (message, type = 'progress') => {
+	const el = $('<p/>',{text:message}),
+		classMaps = {
+			fail: 'text-danger',
+			progress: 'text-info',
+			success: 'text-success'
+		}
+	el.addClass(classMaps[type]);
+	$status.append(el);
+}
+
 $.get('/printers/active', printers => {
 	printers.forEach(addPrinter);
+});
+
+$('.btn-clear').click(function() {
+	$status.empty();
 });
 
 const printerContainer = $('#printers');
@@ -21,6 +38,8 @@ socket.on('printer disconnect', removePrinter);
 
 $('#print-form').submit(e => {
 	e.preventDefault();
+	$status.empty();
+	statusLog('Sending for printing...', 'progress');
 	sendFile(e.target);
 })
 
@@ -35,14 +54,17 @@ const sendFile = form => {
         contentType: false,
         cache: false,
         timeout: 600000,
-        success: response => handleResponse(submitBtn, response)
+		success: response => handleResponse(submitBtn, response),
+		error: handleError.bind(null, submitBtn)
 	});
 }
 
+const handleError = (btn, err) => {
+	btn.prop('disabled', false);
+	statusLog(err.responseJSON.message, 'fail');
+}
+
 const handleResponse = (submitBtn, res) => {
+	statusLog(res.message, 'success');
 	submitBtn.prop('disabled', false);
-	console.log(status)
-	if(res.status === 'ok') {
-		alert('File sent for printing');
-	}
 }

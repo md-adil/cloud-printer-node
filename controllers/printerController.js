@@ -15,9 +15,15 @@ printers.on('connect', socket => {
 })
 
 exports.print = (req, res) => {
-	printers.emit('print', req.file.buffer, { name: req.file.originalname});
+	if(!req.file) {
+		return res.status(422).send({message: 'Please select a file to print'});
+	}
+	printers.to(req.body.id).emit('print', req.file.buffer, {
+		name: req.file.originalname,
+		id: req.body.id
+	});
 	res.send({
-		status: 'ok'
+		message: 'Sent to printer'
 	});
 }
 

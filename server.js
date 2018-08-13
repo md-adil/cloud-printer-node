@@ -9,9 +9,9 @@ const express = require('express'),
 exports.io = io;
 
 const printerController = require('./controllers/printerController.js');
+require('./sockets/printer.js')(io);
 
-
-app.use(express.static(__dirname));
+app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get('/printers/active', printerController.index);
